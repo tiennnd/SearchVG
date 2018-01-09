@@ -9,7 +9,7 @@ export default (key, page) => {
 
     return new Promise((resolve, reject) => {
 
-        return resolve(item);
+        // return resolve(item);
 
 
         console.log('Make a request for : ' + baseUrl);
@@ -25,7 +25,7 @@ export default (key, page) => {
         );
 
 
-        /*
+
         fetch(myRequest)
             .then( response => {
                 if (response.status === 200) {
@@ -45,11 +45,10 @@ export default (key, page) => {
                     // }
 
 
-                    // const parser = new DOMParser.DOMParser();
-                    // const parsed = parser.parseFromString(html, 'text/html');
-                    // let elements = parsed.getElementsByTagName('h3');
-                    // console.log('size  = ' + elements.length);
-
+                    const parser = new DOMParser.DOMParser();
+                    const parsed = parser.parseFromString(html, 'text/html');
+                    let elements = parsed.getElementsByClassName('new_product_item_name  _fix');
+                    console.log('size  = ' + elements.length);
 
                     return resolve(item);
 
@@ -63,7 +62,7 @@ export default (key, page) => {
             }).catch(error => {
             console.error(error);
         });
-        */
+
 
     })
 
