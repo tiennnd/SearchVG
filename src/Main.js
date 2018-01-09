@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {
     View,
-    StyleSheet,
+    StyleSheet, RefreshControl,
     Button, TextInput, FlatList, Text, AsyncStorage, TouchableOpacity
 } from 'react-native'
 import ItemProduct from "./components/ItemProduct";
@@ -16,9 +16,11 @@ class Main extends Component {
         super(props);
         this.state = {
             text: '',
+            isFreshing: false,
             item: [],
             recentSearch: [],
-            show: []
+            show: [],
+            indexPage: 0
         }
     }
 
@@ -39,11 +41,18 @@ class Main extends Component {
 
     componentWillReceiveProps(nextProps) {
         console.log('change props' + JSON.stringify(nextProps));
-
+        if (nextProps.productData.isFetching === false){
+            this.setState({isFreshing:false})
+        }
         this.setState({
-            item: nextProps.productData.listProduct,
+            item: nextProps.productData.listProduct
         })
+    }
 
+
+    shouldComponentUpdate(nextProps, nextState) {
+        console.log('show component update....');
+        return true;
     }
 
 
@@ -61,8 +70,9 @@ class Main extends Component {
                         style={{alignItems: 'center', justifyContent: 'center'}}
                         title={'Search'}
                         onPress={() => {
-                            this.props.fetchProduct(this.state.text, 1);
+                            this.actionFetchProduct(this.state.text, this.state.indexPage);
 
+                            // show suggest text
                             if (this.state.recentSearch.length === 0) {
                                 const tempState = this.state.recentSearch
                                 tempState.push(this.state.text)
@@ -75,6 +85,8 @@ class Main extends Component {
 
                                     }
                                 })
+
+
                             } else if (this.state.recentSearch.length > 0 && this.state.recentSearch.indexOf(this.state.text) === -1) {
                                 const tempState = this.state.recentSearch
                                 tempState.push(this.state.text)
@@ -84,7 +96,6 @@ class Main extends Component {
                                 AsyncStorage.setItem('recentSearch', JSON.stringify(this.state.recentSearch), (error, result) => {
                                     if (!error) {
                                         console.log('saved recent search');
-
                                     }
                                 })
 
@@ -110,13 +121,6 @@ class Main extends Component {
                     />
 
                 </View>
-                {
-                    this.props.productData.isFetching &&
-                    <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                        <Text>loading... </Text>
-                    </View>
-                }
-
 
                 <Autocomplete
                     data={this.state.show}
@@ -132,6 +136,7 @@ class Main extends Component {
                     onChangeText={text => {
                         this.setState({
                             text: text,
+                            indexPage: 1,
                             show: this.state.recentSearch.filter((text) => {
                                 return text.indexOf(this.state.text) !== -1 && text != this.state.text;
                             })
@@ -148,29 +153,46 @@ class Main extends Component {
 
 
                 <FlatList
-                    onEndReached={() => {
-
-                    }}
                     style={{flex: 1, flexDirection: 'column'}}
                     data={this.state.item}
-                    renderItem={renderItem.bind(this)}
+                    renderItem={this.renderItem}
+                    keyExtractor={(item, index) => item.index}
+                    refreshControl={
+                        <RefreshControl
+                            onRefresh={() => {
+                                console.log('onRefresh....');
+                                this.setState({indexPage:this.state.indexPage + 1})
+                                console.log('indexPage = ' + this.state.indexPage);
+
+                                this.actionFetchProduct(this.state.text, this.state.indexPage)
+                            }}
+                            refreshing={this.state.isFreshing}
+                        />}
                 />
 
             </View>
         )
     }
-}
 
-renderItem = ({item}) => {
-    return (
-        <ItemProduct
-            url={item.url}
-            width={item.width}
-            height={item.height}
-            title={item.title}
-            flex={1}
-        />
-    )
+
+    actionFetchProduct = (text, indexPage) => {
+        this.setState({isFreshing: true});
+        this.props.fetchProduct(text, indexPage);
+    }
+
+
+    renderItem = ({item}) => {
+        return (
+            <ItemProduct
+                url={item.url}
+                width={item.width}
+                height={item.height}
+                title={item.title}
+                flex={1}
+            />
+        )
+    }
+
 }
 
 const mapStateToProps = state => ({

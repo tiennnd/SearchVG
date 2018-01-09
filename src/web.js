@@ -9,7 +9,9 @@ export default (key, page) => {
 
     return new Promise((resolve, reject) => {
 
-        // return resolve(item);
+        // return resolve(item.filter((x) => {
+        //     return x.index < 5 * page;
+        // }));
 
 
         console.log('Make a request for : ' + baseUrl);
@@ -25,9 +27,8 @@ export default (key, page) => {
         );
 
 
-
         fetch(myRequest)
-            .then( response => {
+            .then(response => {
                 if (response.status === 200) {
 
                     let html = response._bodyInit;
@@ -45,12 +46,18 @@ export default (key, page) => {
                     // }
 
 
-                    const parser = new DOMParser.DOMParser();
-                    const parsed = parser.parseFromString(html, 'text/html');
-                    let elements = parsed.getElementsByClassName('new_product_item_name  _fix');
-                    console.log('size  = ' + elements.length);
+                    // const parser = new DOMParser.DOMParser();
+                    // const parsed = parser.parseFromString(html, 'text/html');
+                    // let elements = parsed.getElementsByClassName('new_product_item_name  _fix');
+                    // console.log('size  = ' + elements.length);
 
-                    return resolve(item);
+                    // return resolve(item);
+
+                    setTimeout(() => {
+                        return resolve(item.filter((x) => {
+                            return x.index < 5 * page;
+                        }));
+                    }, 1000)
 
                 } else {
                     throw new Error('Something went wrong on api server!');
@@ -76,76 +83,88 @@ function getTitle(html, index) {
 
 const item = [
     {
-        title: 'Huyen My 1',
+        title: 'Huyen My 0',
         url: 'https://media.thethaovanhoa.vn/Upload/YHNKxWgZb1sjFDALClZWA/files/8N0A1729.JPG',
         width: 100,
-        height: 100
-    },
-    {
-        title: 'Huyen My 2',
-        url: 'https://image.thanhnien.vn/665/uploaded/nhith/2017_08_22/hmh_uqkj.jpg',
-        width: 100,
-        height: 100
-    },
-    {
-        title: 'Huyen My 3',
-        url: 'https://baomoi-photo-3-td.zadn.vn/w1000_r1m/17/07/31/17/22889954/1_57687.jpg',
-        width: 100,
-        height: 100
-    },
-    {
-        title: 'Huyen My 4',
-        url: 'https://s-media-cache-ak0.pinimg.com/originals/15/bd/61/15bd618f4dc00b940f6622236a4186bf.jpg',
-        width: 100,
-        height: 100
+        height: 100,
+        index: 0
     },
     {
         title: 'Huyen My 1',
-        url: 'https://media.thethaovanhoa.vn/Upload/YHNKxWgZb1sjFDALClZWA/files/8N0A1729.JPG',
+        url: 'https://image.thanhnien.vn/665/uploaded/nhith/2017_08_22/hmh_uqkj.jpg',
         width: 100,
-        height: 100
+        height: 100,
+        index: 1
     },
     {
         title: 'Huyen My 2',
-        url: 'https://image.thanhnien.vn/665/uploaded/nhith/2017_08_22/hmh_uqkj.jpg',
+        url: 'https://baomoi-photo-3-td.zadn.vn/w1000_r1m/17/07/31/17/22889954/1_57687.jpg',
         width: 100,
-        height: 100
+        height: 100,
+        index: 2
     },
     {
         title: 'Huyen My 3',
-        url: 'https://baomoi-photo-3-td.zadn.vn/w1000_r1m/17/07/31/17/22889954/1_57687.jpg',
+        url: 'https://s-media-cache-ak0.pinimg.com/originals/15/bd/61/15bd618f4dc00b940f6622236a4186bf.jpg',
         width: 100,
-        height: 100
+        height: 100,
+        index: 3
     },
     {
         title: 'Huyen My 4',
-        url: 'https://s-media-cache-ak0.pinimg.com/originals/15/bd/61/15bd618f4dc00b940f6622236a4186bf.jpg',
-        width: 100,
-        height: 100
-    },
-    {
-        title: 'Huyen My 1',
         url: 'https://media.thethaovanhoa.vn/Upload/YHNKxWgZb1sjFDALClZWA/files/8N0A1729.JPG',
         width: 100,
-        height: 100
+        height: 100,
+        index: 4
     },
     {
-        title: 'Huyen My 2',
+        title: 'Huyen My 5',
         url: 'https://image.thanhnien.vn/665/uploaded/nhith/2017_08_22/hmh_uqkj.jpg',
         width: 100,
-        height: 100
+        height: 100,
+        index: 5
     },
     {
-        title: 'Huyen My 3',
+        title: 'Huyen My 6',
         url: 'https://baomoi-photo-3-td.zadn.vn/w1000_r1m/17/07/31/17/22889954/1_57687.jpg',
         width: 100,
-        height: 100
+        height: 100,
+        index: 6
     },
     {
-        title: 'Huyen My 4',
+        title: 'Huyen My 7',
         url: 'https://s-media-cache-ak0.pinimg.com/originals/15/bd/61/15bd618f4dc00b940f6622236a4186bf.jpg',
         width: 100,
-        height: 100
+        height: 100,
+        index: 7
+    },
+    {
+        title: 'Huyen My 8',
+        url: 'https://media.thethaovanhoa.vn/Upload/YHNKxWgZb1sjFDALClZWA/files/8N0A1729.JPG',
+        width: 100,
+        height: 100,
+        index: 8
+    },
+    {
+        title: 'Huyen My 9',
+        url: 'https://image.thanhnien.vn/665/uploaded/nhith/2017_08_22/hmh_uqkj.jpg',
+        width: 100,
+        height: 100,
+        index: 9
+    },
+    {
+        title: 'Huyen My 10',
+        url: 'https://baomoi-photo-3-td.zadn.vn/w1000_r1m/17/07/31/17/22889954/1_57687.jpg',
+        width: 100,
+        height: 100,
+        index: 10
+    },
+    {
+        title: 'Huyen My 11',
+        url: 'https://s-media-cache-ak0.pinimg.com/originals/15/bd/61/15bd618f4dc00b940f6622236a4186bf.jpg',
+        width: 100,
+        height: 100,
+        index: 11
     },
 ]
 
