@@ -4,16 +4,17 @@ import {
     StyleSheet, RefreshControl,
     Button, TextInput, FlatList, Text, AsyncStorage, TouchableOpacity
 } from 'react-native'
-import ItemProduct from "./components/ItemProduct";
-import {connect} from "react-redux";
-import {fetchProduct} from "./actions";
+import ItemProduct from "./ItemProduct";
+import {connect, Provider} from "react-redux";
+import {fetchProduct} from "../actions";
 import Autocomplete from "react-native-autocomplete-input";
+import store from "../store";
 
 class Main extends Component {
 
     onClearHistory = () => {
         this.setState({recentSearch: [], show: []});
-        AsyncStorage.setItem('recentSearch', JSON.stringify(this.state.recentSearch), (error, result) => {
+        AsyncStorage.setItem('recentSearch', JSON.stringify([]), (error, result) => {
                 if (!error) {
                     console.log('clear history search');
                 }
@@ -34,7 +35,6 @@ class Main extends Component {
             AsyncStorage.setItem('recentSearch', JSON.stringify(this.state.recentSearch), (error, result) => {
                 if (!error) {
                     console.log('saved recent search');
-
                 }
             })
 
@@ -81,20 +81,26 @@ class Main extends Component {
     renderItem = ({item}) => {
         return (
             <ItemProduct
+                price={item.price}
                 url={item.url}
                 width={item.width}
                 height={item.height}
                 title={item.title}
+                thumbnail={item.thumbnail}
+                navigate={this.props.navigate}
                 flex={1}
             />
         )
     }
+
+
     onLoadMore = (xxx) => {
         console.log('xxx', JSON.stringify(xxx));
         this.setState({
-                indexPage: this.state.indexPage + 1
-            })
-    this.actionFetchProduct(this.state.text, this.state.indexPage)
+            indexPage: this.state.indexPage + 1
+        }, () => {
+            this.actionFetchProduct(this.state.text, this.state.indexPage)
+        })
     };
 
     constructor(props) {
@@ -125,86 +131,82 @@ class Main extends Component {
 
 
     componentWillReceiveProps(nextProps) {
+        console.log('state = ' + this.state.isFreshing);
 
         console.log('change props',
-            'list size = ' + nextProps.productData.listProduct.length+
+            'list size = ' + nextProps.productData.listProduct.length +
             ', productFetched = ' + nextProps.productData.productFetched +
             ', isFetching = ' + nextProps.productData.isFetching +
             ', page = ' + nextProps.productData.page);
 
 
         if (nextProps.productData.isFetching === false) {
-            this.setState({isFreshing: false})
+            this.setState({isFreshing: false, indexPage: nextProps.productData.page})
+            this.setState({
+                item: nextProps.productData.listProduct
+            })
         }
-        this.setState({
-            item: nextProps.productData.listProduct
-        })
+
     }
-
-
-    shouldComponentUpdate(nextProps, nextState) {
-        console.log('show component update....');
-        return true;
-    }
-
 
     render() {
+
+        const {navigate} = this.props.navigate;
+
         return (
-            <View style={styles.container}>
-                <View style={styles.rowInputSearch}>
-                    <Button
-                        style={{alignItems: 'center', justifyContent: 'center'}}
-                        title={'Search'}
-                        onPress={this.onClickSearch}
+            <Provider store={store}>
+                <View style={styles.container}>
+                    <View style={styles.rowInputSearch}>
+                        <Button
+                            style={{alignItems: 'center', justifyContent: 'center'}}
+                            title={'Search'}
+                            onPress={this.onClickSearch}
+                        />
+
+                        <Button
+                            title={'Clear history search'}
+                            onPress={this.onClearHistory}
+                        />
+
+                    </View>
+
+                    <Autocomplete
+                        data={this.state.show}
+                        onBlur={(event) => {
+                            console.log('event');
+                            console.log(event);
+                            this.setState({show: []})
+                        }}
+                        underlineColorAndroid={'transparent'}
+                        placeholder={'type something...'}
+                        defaultValue={''}
+                        value={this.state.text}
+                        onChangeText={this.onChangeText}
+
+                        renderItem={text => (
+                            <TouchableOpacity onPress={() => this.setState({text: text})}>
+                                <Text>{text}</Text>
+                            </TouchableOpacity>
+                        )}
                     />
 
-                    <TextInput onBlur={(event) => {
-                        console.log('event');
-                        console.log(event);
-                    }}/>
 
-                    <Button
-                        title={'Clear history'}
-                        onPress={this.onClearHistory}
+                    <FlatList
+                        style={{flex: 1, flexDirection: 'column'}}
+                        data={this.state.item}
+                        renderItem={this.renderItem}
+                        keyExtractor={(item) => item.index}
+                        refreshControl={
+                            <RefreshControl
+                                onRefresh={this.onRefresh}
+                                refreshing={this.state.isFreshing}
+                            />}
+                        onEndReached={this.onLoadMore}
+                        onEndReachedThreshold={0.1}
+
                     />
-
                 </View>
-
-                <Autocomplete
-                    data={this.state.show}
-                    onBlur={(event) => {
-                        console.log('event');
-                        console.log(event);
-                        this.setState({show: []})
-                    }}
-                    placeholder={'type something...'}
-                    defaultValue={''}
-                    value={this.state.text}
-                    onChangeText={this.onChangeText}
-
-                    renderItem={text => (
-                        <TouchableOpacity onPress={() => this.setState({text: text})}>
-                            <Text>{text}</Text>
-                        </TouchableOpacity>
-                    )}
-                />
-
-
-                <FlatList
-                    style={{flex: 1, flexDirection: 'column'}}
-                    data={this.state.item}
-                    renderItem={this.renderItem}
-                    keyExtractor={(item, index) => item.index}
-                    refreshControl={
-                        <RefreshControl
-                            onRefresh={this.onRefresh}
-                            refreshing={this.state.isFreshing}
-                        />}
-                    onEndReached={this.onLoadMore}
-                    onEndReachedThreshold={0.01}
-
-                />
-            </View>
+            </Provider>
         )
     }
 }
@@ -223,12 +225,12 @@ export default connect(mapStateToProps, mapDispatchToProps)(Main)
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginTop: 30,
         marginLeft: 8,
         marginRight: 8
     },
     rowInputSearch: {
-        flexDirection: 'row'
+        flexDirection: 'row',
+        justifyContent:'space-between'
     },
     textInput: {
         borderWidth: 1,

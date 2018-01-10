@@ -4,21 +4,25 @@
  * @flow
  */
 
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
-    StyleSheet,
-    View
+    View,
+    StyleSheet, Button
 } from 'react-native';
-import Main from "./src/Main";
+import Main from "./src/components/Main";
 import store from "./src/store";
 import {Provider} from 'react-redux';
+import {DetailsComponent} from "./src/constants";
+
 
 export default class App extends Component<{}> {
+
     render() {
+
         return (
             <Provider store={store}>
                 <View style={styles.container}>
-                    <Main/>
+                    <Main navigate={this.props.navigation}/>
                 </View>
             </Provider>
         );

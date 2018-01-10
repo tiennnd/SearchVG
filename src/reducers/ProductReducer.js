@@ -14,8 +14,8 @@ export default function ProductReducer (state = initialState, action) {
             return {
                 ...state,
                 isFetching:true,
-                // listProduct:[],
-                page:0
+                listProduct:[],
+                page:action.page
             }
         case FETCHING_PRODUCT_SUCCESSFUL:
             return {

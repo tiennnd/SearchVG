@@ -1,22 +1,13 @@
-// var baseUrl = 'https://touch.vatgia.com';
-// var baseUrl = 'https://www.npmjs.com/package/fast-html-parser';
 var baseUrl = 'https://touch.vatgia.com/ajax_v2/load_quick_search_result.php';
-import DOMParser from 'react-native-html-parser';
-
+let indexGen = 0;
 
 export default (key, page) => {
+    this.page = page;
     console.log(`key word = ${key} page = ${page}`);
 
     return new Promise((resolve, reject) => {
-
-        // return resolve(item.filter((x) => {
-        //     return x.index < 5 * page;
-        // }));
-
-
         console.log('Make a request for : ' + baseUrl);
         const myRequest = new Request(baseUrl + '?keyword=' + key + '&page=' + page,
-            // const myRequest = new Request(baseUrl,
             {
                 method: 'POST',
                 header: {
@@ -28,44 +19,19 @@ export default (key, page) => {
 
 
         fetch(myRequest)
-            .then(response => {
+            .then(async response => {
                 if (response.status === 200) {
-
                     let html = response._bodyInit;
+                    // await products = extractProduct(html);
+                    // console.log('get size = ' + products.length);
 
-                    // let length = html.split("new_product_item_name  _fix");
-                    // let lastItemiIndex = 0;
-                    // for (var i = 0; i<length; i++) {
-                    //
-                    //     let index = html.indexOf('new_product_item_name  _fix', lastItemiIndex);
-                    //     lastItemiIndex = index;
-                    //
-                    //     // doing ...........................
-                    //     let check = getTitle(html, index);
-                    //     console.log('check = ' + check);
-                    // }
-
-
-                    // const parser = new DOMParser.DOMParser();
-                    // const parsed = parser.parseFromString(html, 'text/html');
-                    // let elements = parsed.getElementsByClassName('new_product_item_name  _fix');
-                    // console.log('size  = ' + elements.length);
-
-                    // return resolve(item);
-
-                    setTimeout(() => {
-                        return resolve(item.filter((x) => {
-                            return x.index < 5 * page;
-                        }));
-                    }, 1000)
-
+                    return resolve(extractProduct(html));
                 } else {
                     throw new Error('Something went wrong on api server!');
                 }
             })
             .then(response => {
                 console.debug(response);
-                // ...
             }).catch(error => {
             console.error(error);
         });
@@ -75,152 +41,80 @@ export default (key, page) => {
 
 }
 
-function getTitle(html, index) {
-    let title = html.substring(index + 30, html.indexOf("<", index + 3))
-    // console.log('index = ' + index +', title=' + title);
-    return title;
+
+async function extractProduct(html){
+    await getTitle(html, 0);
+    await getThumnails(html, 0);
+    await getPrice(html, 0);
+    await getLink(html,0);
+    let product = [];
+    for (var i = 0; i < arrTitle.length; i++) {
+        product.push(
+            {
+                title: arrTitle[i],
+                url: arrLink[i],
+                price:arrPrice[i],
+                thumbnail:arrThumbnail[i],
+                width: 100,
+                height: 100,
+                index: indexGen++
+            })
+    }
+    return product;
 }
 
-const item = [
-    {
-        title: 'Huyen My 0',
-        url: 'https://media.thethaovanhoa.vn/Upload/YHNKxWgZb1sjFDALClZWA/files/8N0A1729.JPG',
-        width: 100,
-        height: 100,
-        index: 0
-    },
-    {
-        title: 'Huyen My 1',
-        url: 'https://image.thanhnien.vn/665/uploaded/nhith/2017_08_22/hmh_uqkj.jpg',
-        width: 100,
-        height: 100,
-        index: 1
-    },
-    {
-        title: 'Huyen My 2',
-        url: 'https://baomoi-photo-3-td.zadn.vn/w1000_r1m/17/07/31/17/22889954/1_57687.jpg',
-        width: 100,
-        height: 100,
-        index: 2
-    },
-    {
-        title: 'Huyen My 3',
-        url: 'https://s-media-cache-ak0.pinimg.com/originals/15/bd/61/15bd618f4dc00b940f6622236a4186bf.jpg',
-        width: 100,
-        height: 100,
-        index: 3
-    },
-    {
-        title: 'Huyen My 4',
-        url: 'https://media.thethaovanhoa.vn/Upload/YHNKxWgZb1sjFDALClZWA/files/8N0A1729.JPG',
-        width: 100,
-        height: 100,
-        index: 4
-    },
-    {
-        title: 'Huyen My 5',
-        url: 'https://image.thanhnien.vn/665/uploaded/nhith/2017_08_22/hmh_uqkj.jpg',
-        width: 100,
-        height: 100,
-        index: 5
-    },
-    {
-        title: 'Huyen My 6',
-        url: 'https://baomoi-photo-3-td.zadn.vn/w1000_r1m/17/07/31/17/22889954/1_57687.jpg',
-        width: 100,
-        height: 100,
-        index: 6
-    },
-    {
-        title: 'Huyen My 7',
-        url: 'https://s-media-cache-ak0.pinimg.com/originals/15/bd/61/15bd618f4dc00b940f6622236a4186bf.jpg',
-        width: 100,
-        height: 100,
-        index: 7
-    },
-    {
-        title: 'Huyen My 8',
-        url: 'https://media.thethaovanhoa.vn/Upload/YHNKxWgZb1sjFDALClZWA/files/8N0A1729.JPG',
-        width: 100,
-        height: 100,
-        index: 8
-    },
-    {
-        title: 'Huyen My 9',
-        url: 'https://image.thanhnien.vn/665/uploaded/nhith/2017_08_22/hmh_uqkj.jpg',
-        width: 100,
-        height: 100,
-        index: 9
-    },
-    {
-        title: 'Huyen My 10',
-        url: 'https://baomoi-photo-3-td.zadn.vn/w1000_r1m/17/07/31/17/22889954/1_57687.jpg',
-        width: 100,
-        height: 100,
-        index: 10
-    },
-    {
-        title: 'Huyen My 11',
-        url: 'https://s-media-cache-ak0.pinimg.com/originals/15/bd/61/15bd618f4dc00b940f6622236a4186bf.jpg',
-        width: 100,
-        height: 100,
-        index: 11
-    },
-    {
-        title: 'Huyen My 12',
-        url: 'https://baomoi-photo-3-td.zadn.vn/w1000_r1m/17/07/31/17/22889954/1_57687.jpg',
-        width: 100,
-        height: 100,
-        index: 12
-    },
-    {
-        title: 'Huyen My 13',
-        url: 'https://s-media-cache-ak0.pinimg.com/originals/15/bd/61/15bd618f4dc00b940f6622236a4186bf.jpg',
-        width: 100,
-        height: 100,
-        index: 13
-    },
-    {
-        title: 'Huyen My 14',
-        url: 'https://media.thethaovanhoa.vn/Upload/YHNKxWgZb1sjFDALClZWA/files/8N0A1729.JPG',
-        width: 100,
-        height: 100,
-        index: 14
-    },
-    {
-        title: 'Huyen My 15',
-        url: 'https://image.thanhnien.vn/665/uploaded/nhith/2017_08_22/hmh_uqkj.jpg',
-        width: 100,
-        height: 100,
-        index: 15
-    },
-    {
-        title: 'Huyen My 16',
-        url: 'https://baomoi-photo-3-td.zadn.vn/w1000_r1m/17/07/31/17/22889954/1_57687.jpg',
-        width: 100,
-        height: 100,
-        index: 16
-    },
-    {
-        title: 'Huyen My 17',
-        url: 'https://s-media-cache-ak0.pinimg.com/originals/15/bd/61/15bd618f4dc00b940f6622236a4186bf.jpg',
-        width: 100,
-        height: 100,
-        index: 17
-    },
-    {
-        title: 'Huyen My 18',
-        url: 'https://media.thethaovanhoa.vn/Upload/YHNKxWgZb1sjFDALClZWA/files/8N0A1729.JPG',
-        width: 100,
-        height: 100,
-        index: 18
-    },
-    {
-        title: 'Huyen My 19',
-        url: 'https://image.thanhnien.vn/665/uploaded/nhith/2017_08_22/hmh_uqkj.jpg',
-        width: 100,
-        height: 100,
-        index: 19
-    },
-]
+let arrTitle = [];
+function getTitle(html, index) {
 
+    if (index <= html.length) {
+        let id = html.indexOf('new_product_item_name  _fix', index)
+        let title = html.substring(id + 30, html.indexOf("<", id + 3))
+        if (id > 0) {
+            arrTitle.push(title)
+            // console.log('index = ' + id + ', title =' + title);
+            getTitle(html, id + 33);
+        }
+    }
+}
+
+let arrPrice = [];
+function getPrice(html, index) {
+
+    if (index <= html.length) {
+        let id = html.indexOf('class="price', index)
+        let price = html.substring(id + 14, html.indexOf("<", id + 3))
+        if (id > 0) {
+            arrPrice.push(price)
+            // console.log('index = ' + id + ', price =' + price);
+            getPrice(html, id + 14);
+        }
+    }
+}
+
+let arrThumbnail = [];
+function getThumnails(html, index) {
+
+    if (index <= html.length) {
+        let id = html.indexOf('img src="//media.vatgia.vn/', index)
+        let thumbnail = 'https:' + html.substring(id + 9, html.indexOf('/>', id) - 1)
+        if (id > 0) {
+            arrThumbnail.push(thumbnail)
+            // console.log('index = ' + id + ', thumbnail = ' + thumbnail);
+            getThumnails(html, id + 9);
+        }
+    }
+}
+
+let arrLink = [];
+function getLink(html, index) {
+
+    if (index <= html.length) {
+        let id = html.indexOf('href=', index)
+        let link = 'https://touch.vatgia.com' + html.substring(id + 6, html.indexOf(`"`, id + 6) - 1)
+        if (id > 0) {
+            arrLink.push(link)
+            // console.log('index = ' + id + ', link = ' + link);
+            getLink(html, id + 6);
+        }
+    }
+}

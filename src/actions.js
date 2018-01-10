@@ -26,6 +26,7 @@ export function getProductSuccessful(data, page) {
 export function fetchProduct(key, page) {
     return (dispatch) => {
         dispatch(getListProduct(key, page));
+
         crawlProduct(key, page)
             .then((data) => {
                 dispatch(getProductSuccessful(data, page))
